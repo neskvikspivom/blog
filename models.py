@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 
 class User(db.Model):
@@ -7,4 +8,15 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, index=True)  # уникальный юзернейм, по которому можно найти пользователя
     email = db.Column(db.String(120), unique=True, index=True)
     password = db.Column(db.String(256))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    # связь(Таблица_Posts, обращение_author, динамический_метод_загрузки)
 
+
+class Post(db.Model):
+    """Описание таблицы постов в БД"""
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), index=True)
+    body = db.Column(db.String)
+    published = db.Column(db.DateTime, index=True, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # ^ связь между таблицей с постами и таблице с авторами постов
